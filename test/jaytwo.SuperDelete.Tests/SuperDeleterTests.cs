@@ -37,7 +37,7 @@ namespace jaytwo.SuperDelete.Tests
             var delay = TimeSpan.FromSeconds(1);
 
             var stopwatch = Stopwatch.StartNew();
-            var thread = CreateDisappearingLockedFile(fileName, delay);
+            var thread = CreateFileWithDisappearingLock(fileName, delay);
             Assert.True(File.Exists(fileName), "Assert file exists before starting");
 
             // act
@@ -95,7 +95,7 @@ namespace jaytwo.SuperDelete.Tests
             var delay = TimeSpan.FromSeconds(1);
 
             var stopwatch = Stopwatch.StartNew();
-            var task = CreateDisappearingLockedFileAsync(fileName, delay);
+            var task = CreateFileWithDisappearingLockAsync(fileName, delay);
             Assert.True(File.Exists(fileName), "Assert file exists before starting");
 
             // act
@@ -152,7 +152,7 @@ namespace jaytwo.SuperDelete.Tests
 
             Directory.CreateDirectory(directoryName);
             var stopwatch = Stopwatch.StartNew();
-            var thread = CreateDisappearingLockedFile(fileName, delay);
+            var thread = CreateFileWithDisappearingLock(fileName, delay);
             Assert.True(File.Exists(fileName), "Assert file exists before starting");
 
             // act
@@ -214,7 +214,7 @@ namespace jaytwo.SuperDelete.Tests
 
             Directory.CreateDirectory(directoryName);
             var stopwatch = Stopwatch.StartNew();
-            var task = CreateDisappearingLockedFileAsync(fileName, delay);
+            var task = CreateFileWithDisappearingLockAsync(fileName, delay);
             Assert.True(File.Exists(fileName), "Assert file exists before starting");
 
             // act
@@ -260,11 +260,11 @@ namespace jaytwo.SuperDelete.Tests
             File.SetAttributes(path, FileAttributes.ReadOnly);
         }
 
-        private Thread CreateDisappearingLockedFile(string path, TimeSpan delay)
+        private Thread CreateFileWithDisappearingLock(string path, TimeSpan delay)
         {
             var thread = new Thread(() =>
             {
-                using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
+                using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
                 {
                     fileStream.Lock(0, 0);
                     Thread.Sleep(delay);
@@ -279,7 +279,7 @@ namespace jaytwo.SuperDelete.Tests
             return thread;
         }
 
-        private Task CreateDisappearingLockedFileAsync(string path, TimeSpan delay)
+        private Task CreateFileWithDisappearingLockAsync(string path, TimeSpan delay)
         {
             var task = Task.Run(async () =>
             {

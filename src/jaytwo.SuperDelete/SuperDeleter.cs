@@ -104,9 +104,9 @@ namespace jaytwo.SuperDelete
             }
             catch (Exception ex)
             {
-                foreach (string directory in Directory.GetDirectories(path))
+                foreach (string subDirectory in Directory.GetDirectories(path))
                 {
-                    DeleteDirectory(directory);
+                    DeleteDirectory(subDirectory);
                 }
 
                 if (ex is UnauthorizedAccessException)
