@@ -20,13 +20,13 @@ namespace jaytwo.SuperDelete.Tests
             {
             }
 
-            Assert.True(File.Exists(fileName));
+            Assert.True(File.Exists(fileName), "Assert file exists before starting");
 
             // act
             SuperDeleter.SuperDelete(fileName);
 
             // assert
-            Assert.False(File.Exists(fileName));
+            Assert.False(File.Exists(fileName), "Assert file no longer exists");
         }
 
         [Fact]
@@ -36,17 +36,19 @@ namespace jaytwo.SuperDelete.Tests
             var fileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             var delay = TimeSpan.FromSeconds(1);
 
-            var thread = CreateDisappearingFile(fileName, delay);
-            Assert.True(File.Exists(fileName));
             var stopwatch = Stopwatch.StartNew();
+            var thread = CreateDisappearingLockedFile(fileName, delay);
+            Assert.True(File.Exists(fileName), "Assert file exists before starting");
 
             // act
             SuperDeleter.SuperDelete(fileName);
 
             // assert
             stopwatch.Stop();
-            Assert.False(File.Exists(fileName));
-            Assert.True(stopwatch.Elapsed >= delay);
+            Assert.False(File.Exists(fileName), "Assert file no longer exists");
+
+            // https://github.com/dotnet/runtime/issues/24432 says "no Unix or Linux file locking mechanism protects against deletion"
+            //Assert.True(stopwatch.Elapsed >= delay, $"Assert elapsed time is greater than delay ({stopwatch.Elapsed.TotalMilliseconds:n1}ms < {delay.TotalMilliseconds:n1}ms)");
 
             // cleanup
             thread.Join();
@@ -58,13 +60,13 @@ namespace jaytwo.SuperDelete.Tests
             // arrange
             var fileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             CreateReadOnlyFile(fileName);
-            Assert.True(File.Exists(fileName));
+            Assert.True(File.Exists(fileName), "Assert file exists before starting");
 
             // act
             SuperDeleter.SuperDelete(fileName);
 
             // assert
-            Assert.False(File.Exists(fileName));
+            Assert.False(File.Exists(fileName), "Assert file no longer exists");
         }
 
         [Fact]
@@ -76,13 +78,13 @@ namespace jaytwo.SuperDelete.Tests
             {
             }
 
-            Assert.True(File.Exists(fileName));
+            Assert.True(File.Exists(fileName), "Assert file exists before starting");
 
             // act
             await SuperDeleter.SuperDeleteAsync(fileName);
 
             // assert
-            Assert.False(File.Exists(fileName));
+            Assert.False(File.Exists(fileName), "Assert file no longer exists");
         }
 
         [Fact]
@@ -92,17 +94,19 @@ namespace jaytwo.SuperDelete.Tests
             var fileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             var delay = TimeSpan.FromSeconds(1);
 
-            var task = CreateDisappearingFileAsync(fileName, delay);
-            Assert.True(File.Exists(fileName));
             var stopwatch = Stopwatch.StartNew();
+            var task = CreateDisappearingLockedFileAsync(fileName, delay);
+            Assert.True(File.Exists(fileName), "Assert file exists before starting");
 
             // act
             await SuperDeleter.SuperDeleteAsync(fileName);
 
             // assert
             stopwatch.Stop();
-            Assert.False(File.Exists(fileName));
-            Assert.True(stopwatch.Elapsed >= delay, $"{stopwatch.Elapsed.TotalMilliseconds}ms elapsed");
+            Assert.False(File.Exists(fileName), "Assert file no longer exists");
+
+            // https://github.com/dotnet/runtime/issues/24432 says "no Unix or Linux file locking mechanism protects against deletion"
+            //Assert.True(stopwatch.Elapsed >= delay, $"Assert elapsed time is greater than delay ({stopwatch.Elapsed.TotalMilliseconds:n1}ms < {delay.TotalMilliseconds:n1}ms)");
 
             // cleanup
             await task;
@@ -114,13 +118,13 @@ namespace jaytwo.SuperDelete.Tests
             // arrange
             var fileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             CreateReadOnlyFile(fileName);
-            Assert.True(File.Exists(fileName));
+            Assert.True(File.Exists(fileName), "Assert file exists before starting");
 
             // act
             await SuperDeleter.SuperDeleteAsync(fileName);
 
             // assert
-            Assert.False(File.Exists(fileName));
+            Assert.False(File.Exists(fileName), "Assert file no longer exists");
         }
 
         [Fact]
@@ -129,13 +133,13 @@ namespace jaytwo.SuperDelete.Tests
             // arrange
             var directoryName = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(directoryName);
-            Assert.True(Directory.Exists(directoryName));
+            Assert.True(Directory.Exists(directoryName), "Assert directory exists before starting");
 
             // act
             SuperDeleter.SuperDelete(directoryName);
 
             // assert
-            Assert.False(Directory.Exists(directoryName));
+            Assert.False(Directory.Exists(directoryName), "Assert directory does not exist");
         }
 
         [Fact]
@@ -147,17 +151,20 @@ namespace jaytwo.SuperDelete.Tests
             var delay = TimeSpan.FromSeconds(1);
 
             Directory.CreateDirectory(directoryName);
-            var thread = CreateDisappearingFile(fileName, delay);
-            Assert.True(File.Exists(fileName));
             var stopwatch = Stopwatch.StartNew();
+            var thread = CreateDisappearingLockedFile(fileName, delay);
+            Assert.True(File.Exists(fileName), "Assert file exists before starting");
 
             // act
             SuperDeleter.SuperDelete(directoryName);
 
             // assert
             stopwatch.Stop();
-            Assert.False(File.Exists(fileName));
-            Assert.True(stopwatch.Elapsed >= delay);
+            Assert.False(File.Exists(fileName), "Assert file no longer exists");
+            Assert.False(Directory.Exists(directoryName), "Assert directory does not exist");
+
+            // https://github.com/dotnet/runtime/issues/24432 says "no Unix or Linux file locking mechanism protects against deletion"
+            //Assert.True(stopwatch.Elapsed >= delay, $"Assert elapsed time is greater than delay ({stopwatch.Elapsed.TotalMilliseconds:n1}ms < {delay.TotalMilliseconds:n1}ms)");
 
             // cleanup
             thread.Join();
@@ -172,12 +179,14 @@ namespace jaytwo.SuperDelete.Tests
 
             Directory.CreateDirectory(directoryName);
             CreateReadOnlyFile(fileName);
+            Assert.True(File.Exists(fileName), "Assert file exists before starting");
 
             // act
             SuperDeleter.SuperDelete(directoryName);
 
             // assert
-            Assert.False(File.Exists(fileName));
+            Assert.False(File.Exists(fileName), "Assert file no longer exists");
+            Assert.False(Directory.Exists(directoryName), "Assert directory does not exist");
         }
 
         [Fact]
@@ -186,13 +195,13 @@ namespace jaytwo.SuperDelete.Tests
             // arrange
             var directoryName = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(directoryName);
-            Assert.True(Directory.Exists(directoryName));
+            Assert.True(Directory.Exists(directoryName), "Assert directory exists before starting");
 
             // act
             await SuperDeleter.SuperDeleteAsync(directoryName);
 
             // assert
-            Assert.False(Directory.Exists(directoryName));
+            Assert.False(Directory.Exists(directoryName), "Assert directory does not exist");
         }
 
         [Fact]
@@ -204,17 +213,20 @@ namespace jaytwo.SuperDelete.Tests
             var delay = TimeSpan.FromSeconds(1);
 
             Directory.CreateDirectory(directoryName);
-            var task = CreateDisappearingFileAsync(fileName, delay);
-            Assert.True(File.Exists(fileName));
             var stopwatch = Stopwatch.StartNew();
+            var task = CreateDisappearingLockedFileAsync(fileName, delay);
+            Assert.True(File.Exists(fileName), "Assert file exists before starting");
 
             // act
             await SuperDeleter.SuperDeleteAsync(directoryName);
 
             // assert
             stopwatch.Stop();
-            Assert.False(File.Exists(fileName));
-            Assert.True(stopwatch.Elapsed >= delay);
+            Assert.False(File.Exists(fileName), "Assert file no longer exists");
+            Assert.False(Directory.Exists(directoryName), "Assert directory does not exist");
+
+            // https://github.com/dotnet/runtime/issues/24432 says "no Unix or Linux file locking mechanism protects against deletion"
+            //Assert.True(stopwatch.Elapsed >= delay, $"Assert elapsed time is greater than delay ({stopwatch.Elapsed.TotalMilliseconds:n1}ms < {delay.TotalMilliseconds:n1}ms)");
 
             // cleanup
             await task;
@@ -229,12 +241,14 @@ namespace jaytwo.SuperDelete.Tests
 
             Directory.CreateDirectory(directoryName);
             CreateReadOnlyFile(fileName);
+            Assert.True(File.Exists(fileName), "Assert file exists before starting");
 
             // act
             await SuperDeleter.SuperDeleteAsync(directoryName);
 
             // assert
-            Assert.False(File.Exists(fileName));
+            Assert.False(File.Exists(fileName), "Assert file no longer exists");
+            Assert.False(Directory.Exists(directoryName), "Assert directory does not exist");
         }
 
         private void CreateReadOnlyFile(string path)
@@ -246,12 +260,13 @@ namespace jaytwo.SuperDelete.Tests
             File.SetAttributes(path, FileAttributes.ReadOnly);
         }
 
-        private Thread CreateDisappearingFile(string path, TimeSpan delay)
+        private Thread CreateDisappearingLockedFile(string path, TimeSpan delay)
         {
             var thread = new Thread(() =>
             {
-                using (var fileStream = File.Create(path))
+                using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
                 {
+                    fileStream.Lock(0, 0);
                     Thread.Sleep(delay);
                 }
             });
@@ -264,12 +279,13 @@ namespace jaytwo.SuperDelete.Tests
             return thread;
         }
 
-        private Task CreateDisappearingFileAsync(string path, TimeSpan delay)
+        private Task CreateDisappearingLockedFileAsync(string path, TimeSpan delay)
         {
             var task = Task.Run(async () =>
             {
-                using (var fileStream = File.Create(path))
+                using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
                 {
+                    fileStream.Lock(0, 0);
                     await Task.Delay(delay);
                 }
             });
