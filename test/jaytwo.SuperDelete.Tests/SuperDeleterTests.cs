@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using jaytwo.RuntimeRevelation;
 using Xunit;
 
 namespace jaytwo.SuperDelete.Tests
@@ -48,7 +49,10 @@ namespace jaytwo.SuperDelete.Tests
             Assert.False(File.Exists(fileName), "Assert file no longer exists");
 
             // https://github.com/dotnet/runtime/issues/24432 says "no Unix or Linux file locking mechanism protects against deletion"
-            //Assert.True(stopwatch.Elapsed >= delay, $"Assert elapsed time is greater than delay ({stopwatch.Elapsed.TotalMilliseconds:n1}ms < {delay.TotalMilliseconds:n1}ms)");
+            if (RuntimeInformation.Current.Platform != OSPlatform.Linux)
+            {
+                Assert.True(stopwatch.Elapsed >= delay, $"Assert elapsed time is greater than delay ({stopwatch.Elapsed.TotalMilliseconds:n1}ms < {delay.TotalMilliseconds:n1}ms)");
+            }
 
             // cleanup
             thread.Join();
@@ -106,7 +110,10 @@ namespace jaytwo.SuperDelete.Tests
             Assert.False(File.Exists(fileName), "Assert file no longer exists");
 
             // https://github.com/dotnet/runtime/issues/24432 says "no Unix or Linux file locking mechanism protects against deletion"
-            //Assert.True(stopwatch.Elapsed >= delay, $"Assert elapsed time is greater than delay ({stopwatch.Elapsed.TotalMilliseconds:n1}ms < {delay.TotalMilliseconds:n1}ms)");
+            if (RuntimeInformation.Current.Platform != OSPlatform.Linux)
+            {
+                Assert.True(stopwatch.Elapsed >= delay, $"Assert elapsed time is greater than delay ({stopwatch.Elapsed.TotalMilliseconds:n1}ms < {delay.TotalMilliseconds:n1}ms)");
+            }
 
             // cleanup
             await task;
@@ -164,7 +171,10 @@ namespace jaytwo.SuperDelete.Tests
             Assert.False(Directory.Exists(directoryName), "Assert directory does not exist");
 
             // https://github.com/dotnet/runtime/issues/24432 says "no Unix or Linux file locking mechanism protects against deletion"
-            //Assert.True(stopwatch.Elapsed >= delay, $"Assert elapsed time is greater than delay ({stopwatch.Elapsed.TotalMilliseconds:n1}ms < {delay.TotalMilliseconds:n1}ms)");
+            if (RuntimeInformation.Current.Platform != OSPlatform.Linux)
+            {
+                Assert.True(stopwatch.Elapsed >= delay, $"Assert elapsed time is greater than delay ({stopwatch.Elapsed.TotalMilliseconds:n1}ms < {delay.TotalMilliseconds:n1}ms)");
+            }
 
             // cleanup
             thread.Join();
@@ -226,7 +236,10 @@ namespace jaytwo.SuperDelete.Tests
             Assert.False(Directory.Exists(directoryName), "Assert directory does not exist");
 
             // https://github.com/dotnet/runtime/issues/24432 says "no Unix or Linux file locking mechanism protects against deletion"
-            //Assert.True(stopwatch.Elapsed >= delay, $"Assert elapsed time is greater than delay ({stopwatch.Elapsed.TotalMilliseconds:n1}ms < {delay.TotalMilliseconds:n1}ms)");
+            if (RuntimeInformation.Current.Platform != OSPlatform.Linux)
+            {
+                Assert.True(stopwatch.Elapsed >= delay, $"Assert elapsed time is greater than delay ({stopwatch.Elapsed.TotalMilliseconds:n1}ms < {delay.TotalMilliseconds:n1}ms)");
+            }
 
             // cleanup
             await task;
