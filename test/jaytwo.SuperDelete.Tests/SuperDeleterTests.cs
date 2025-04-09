@@ -273,6 +273,8 @@ namespace jaytwo.SuperDelete.Tests
             File.SetAttributes(path, FileAttributes.ReadOnly);
         }
 
+#if !OSX
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "Does not run on OSX")]
         private Thread CreateFileWithDisappearingLock(string path, TimeSpan delay)
         {
             var thread = new Thread(() =>
@@ -292,6 +294,7 @@ namespace jaytwo.SuperDelete.Tests
             return thread;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "Does not run on OSX")]
         private Task CreateFileWithDisappearingLockAsync(string path, TimeSpan delay)
         {
             var task = Task.Run(async () =>
@@ -310,5 +313,6 @@ namespace jaytwo.SuperDelete.Tests
 
             return task;
         }
+#endif
     }
 }
