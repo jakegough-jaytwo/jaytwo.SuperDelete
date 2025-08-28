@@ -1,4 +1,4 @@
 library 'JenkinsBuilderLibrary'
 
-helper.loadNuGetProjectDefaults('jaytwo.SuperDelete')
-helper.runNuGetProject()
+nugetProject.build(
+    gitHubRepository: 'jaytwo.SuperDelete')
