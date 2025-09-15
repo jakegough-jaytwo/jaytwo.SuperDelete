@@ -1,14 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;.net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net462;netstandard2.0;.net6.0;net8.0</TargetFrameworks>
     <VersionPrefix>0.2.1</VersionPrefix>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/jakegough/jaytwo.SuperDelete.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="jaytwo.SuperDelete.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="" Link="README.md" />
+  </ItemGroup>
 
 </Project>
